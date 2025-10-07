@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"sync"
 
@@ -30,26 +31,30 @@ func NewExternalServices() *ExternalServices {
 	return instance
 }
 
-func (es *ExternalServices) GetBooks(ctx context.Context) ([]models.Book, error) {
+func (es *ExternalServices) GetBooks(ctx context.Context) []models.Book {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/books", baseURLBooksAPI), nil)
 	if err != nil {
-		return nil, err
+		slog.ErrorContext(ctx, "failed to create request", "error", err)
+		return nil
 	}
 
 	resp, err := es.client.Do(req)
 	if err != nil {
-		return nil, err
+		slog.ErrorContext(ctx, "failed to perform request", "error", err)
+		return nil
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
+		slog.ErrorContext(ctx, "received non-200 response", "status", resp.StatusCode)
+		return nil
 	}
 
 	var books []models.Book
 	if err := json.NewDecoder(resp.Body).Decode(&books); err != nil {
-		return nil, err
+		slog.ErrorContext(ctx, "failed to decode response body", "error", err)
+		return nil
 	}
 
-	return books, nil
+	return books
 }
