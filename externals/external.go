@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 
@@ -33,7 +32,6 @@ func NewExternalServices() *ExternalServices {
 
 func (es *ExternalServices) GetBooks(ctx context.Context) ([]models.Book, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/books", baseURLBooksAPI), nil)
-	log.Println("URl:", fmt.Sprintf("%s/books", baseURLBooksAPI))
 	if err != nil {
 		return nil, err
 	}
