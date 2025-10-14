@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"educabot.com/bookshop/repositories/mockImpls"
-	"educabot.com/bookshop/services"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"educabot.com/bookshop/spec/mockImpls"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBooks_OK(t *testing.T) {
@@ -16,10 +16,9 @@ func TestGetBooks_OK(t *testing.T) {
 
 	// 🧩 Usamos el mock provider para crear el servicio
 	mockBooksProvider := mockImpls.NewMockBooksProvider()
-	bookService := services.NewBooksService(mockBooksProvider)
 
 	// 🧩 Creamos el controlador
-	handler := NewBookController(bookService)
+	handler := NewBookController(mockBooksProvider)
 
 	// 🧩 Configuramos el router
 	r := gin.Default()

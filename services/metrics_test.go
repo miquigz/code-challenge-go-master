@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"educabot.com/bookshop/models"
-	"educabot.com/bookshop/repositories/mockImpls"
+	"educabot.com/bookshop/spec/mockImpls"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,8 @@ func TestMetricService_GetMetrics(t *testing.T) {
 		Author: "Alan Donovan",
 	}
 
-	metrics := metricService.GetMetrics(ctx, query)
+	metrics, err := metricService.GetMetrics(ctx, query)
+	assert.NoError(t, err)
 
 	// Validaciones
 	assert.Equal(t, uint((5000+15000+13000)/3), metrics.MeanUnitsSold)
@@ -66,4 +67,18 @@ func TestBooksWrittenByAuthor(t *testing.T) {
 
 	count = booksWrittenByAuthor(context.Background(), books, "Someone Else")
 	assert.Equal(t, uint(0), count)
+}
+
+func TestMetricService_GetMetrics_NoBooks(t *testing.T) {
+	mockProvider := &mockImpls.MockEmptyBooksProvider{}
+	metricService := NewMetricService(mockProvider)
+
+	ctx := context.Background()
+	query := models.GetMetricsRequest{
+		Author: "Alan Donovan",
+	}
+
+	_, err := metricService.GetMetrics(ctx, query)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "no books available")
 }

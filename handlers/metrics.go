@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"log/slog"
+	"net/http"
+
 	"educabot.com/bookshop/models"
 	"educabot.com/bookshop/services"
 	"github.com/gin-gonic/gin"
-	"log/slog"
-	"net/http"
 )
 
 type MetricController struct {
@@ -22,10 +23,16 @@ func (mc *MetricController) Handle() gin.HandlerFunc {
 		err := ctx.ShouldBindQuery(&query)
 		if err != nil {
 			slog.ErrorContext(ctx, "GetMetrics: failed to bind query", "err", err)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query parameters"})
 			return
 		}
 
-		res := mc.metricService.GetMetrics(ctx, query)
+		res, err := mc.metricService.GetMetrics(ctx, query)
+		if err != nil {
+			slog.ErrorContext(ctx, "GetMetrics: service error", "err", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
 
 		ctx.JSON(http.StatusOK, res)
 	}

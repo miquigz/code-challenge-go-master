@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"errors"
+	"slices"
+
 	"educabot.com/bookshop/models"
 	"educabot.com/bookshop/providers"
-	"slices"
 )
 
 type MetricService struct {
@@ -15,12 +17,23 @@ func NewMetricService(booksService providers.BooksProvider) *MetricService {
 	return &MetricService{booksService: booksService}
 }
 
-func (ms *MetricService) GetMetrics(ctx context.Context, query models.GetMetricsRequest) (metrics models.MetricsResponse) {
-	books := ms.booksService.GetBooks(ctx)
-	metrics.MeanUnitsSold = meanUnitsSold(ctx, books)
-	metrics.CheapestBook = cheapestBook(ctx, books).Name
-	metrics.BooksWrittenByAuthor = booksWrittenByAuthor(ctx, books, query.Author)
-	return
+func (ms *MetricService) GetMetrics(ctx context.Context, query models.GetMetricsRequest) (models.MetricsResponse, error) {
+	books, err := ms.booksService.GetBooks(ctx)
+	if err != nil {
+		return models.MetricsResponse{}, err
+	}
+
+	if len(books) == 0 {
+		return models.MetricsResponse{}, errors.New("no books available")
+	}
+
+	metrics := models.MetricsResponse{
+		MeanUnitsSold:        meanUnitsSold(ctx, books),
+		CheapestBook:         cheapestBook(ctx, books).Name,
+		BooksWrittenByAuthor: booksWrittenByAuthor(ctx, books, query.Author),
+	}
+
+	return metrics, nil
 }
 
 func meanUnitsSold(_ context.Context, books []models.Book) uint {

@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"net/http"
+
 	"educabot.com/bookshop/providers"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type BookController struct {
@@ -16,7 +17,11 @@ func NewBookController(bookService providers.BooksProvider) *BookController {
 
 func (bc *BookController) Handle() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		books := bc.bookService.GetBooks(ctx)
+		books, err := bc.bookService.GetBooks(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			return
+		}
 		ctx.JSON(http.StatusOK, books)
 	}
 }

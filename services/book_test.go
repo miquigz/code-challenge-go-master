@@ -2,9 +2,10 @@ package services
 
 import (
 	"context"
-	"educabot.com/bookshop/repositories/mockImpls"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"educabot.com/bookshop/spec/mockImpls"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBooks(t *testing.T) {
@@ -13,7 +14,8 @@ func TestGetBooks(t *testing.T) {
 	bookService := NewBooksService(mockProvider)
 
 	ctx := context.Background()
-	books := bookService.GetBooks(ctx)
+	books, err := bookService.GetBooks(ctx)
+	assert.NoError(t, err)
 
 	assert.Len(t, books, 3, "Debe devolver 3 libros")
 

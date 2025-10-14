@@ -7,5 +7,5 @@ import (
 )
 
 type BooksProvider interface {
-	GetBooks(ctx context.Context) []models.Book
+	GetBooks(ctx context.Context) ([]models.Book, error)
 }
