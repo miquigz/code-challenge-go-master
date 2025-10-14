@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 	"sync"
+	"time"
 
 	"educabot.com/bookshop/models"
 )
@@ -24,8 +25,19 @@ type ExternalServices struct {
 
 func NewExternalServices() *ExternalServices {
 	once.Do(func() {
+		// Configuración robusta del HTTP client
+		transport := &http.Transport{
+			MaxIdleConns:        100,              // Máximo de conexiones idle
+			MaxIdleConnsPerHost: 10,               // Máximo por host
+			IdleConnTimeout:     90 * time.Second, // Timeout para conexiones idle
+			DisableKeepAlives:   false,            // Habilitar keep-alive
+		}
+
 		instance = &ExternalServices{
-			client: &http.Client{},
+			client: &http.Client{
+				Transport: transport,
+				Timeout:   30 * time.Second, // Timeout total de request
+			},
 		}
 	})
 	return instance
