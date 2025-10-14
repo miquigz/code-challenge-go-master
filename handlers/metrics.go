@@ -5,15 +5,15 @@ import (
 	"net/http"
 
 	"educabot.com/bookshop/models"
-	"educabot.com/bookshop/services"
+	"educabot.com/bookshop/providers"
 	"github.com/gin-gonic/gin"
 )
 
 type MetricController struct {
-	metricService *services.MetricService
+	metricService providers.MetricService
 }
 
-func NewMetricController(metricService *services.MetricService) *MetricController {
+func NewMetricController(metricService providers.MetricService) *MetricController {
 	return &MetricController{metricService: metricService}
 }
 

@@ -14,11 +14,11 @@ func SetupRouter() *gin.Engine {
 	router.SetTrustedProxies(nil)
 
 	// Inicialización de dependencias
-	bookService := services.NewBooksService(externals.NewExternalServices())
-	metricService := services.NewMetricService(bookService)
+	bookProvider := externals.NewExternalServices()
+	metricService := services.NewMetricService(bookProvider)
 
 	// Controladores
-	bookController := handlers.NewBookController(bookService)
+	bookController := handlers.NewBookController(bookProvider)
 	metricsController := handlers.NewMetricController(metricService)
 
 	// Rutas API
