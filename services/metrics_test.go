@@ -34,7 +34,7 @@ func TestMeanUnitsSold(t *testing.T) {
 		{UnitsSold: 13000},
 	}
 
-	mean := meanUnitsSold(context.Background(), books)
+	mean := meanUnitsSold(books)
 	expected := uint((5000 + 15000 + 13000) / 3)
 
 	assert.Equal(t, expected, mean)
@@ -47,7 +47,7 @@ func TestCheapestBook(t *testing.T) {
 		{Name: "Book C", Price: 45},
 	}
 
-	cheapest := cheapestBook(context.Background(), books)
+	cheapest := cheapestBook(books)
 	assert.Equal(t, "Book B", cheapest.Name)
 	assert.Equal(t, uint(40), cheapest.Price)
 }
@@ -59,13 +59,13 @@ func TestBooksWrittenByAuthor(t *testing.T) {
 		{Author: "Alan Donovan"},
 	}
 
-	count := booksWrittenByAuthor(context.Background(), books, "Alan Donovan")
+	count := booksWrittenByAuthor(books, "Alan Donovan")
 	assert.Equal(t, uint(2), count)
 
-	count = booksWrittenByAuthor(context.Background(), books, "Robert Martin")
+	count = booksWrittenByAuthor(books, "Robert Martin")
 	assert.Equal(t, uint(1), count)
 
-	count = booksWrittenByAuthor(context.Background(), books, "Someone Else")
+	count = booksWrittenByAuthor(books, "Someone Else")
 	assert.Equal(t, uint(0), count)
 }
 
