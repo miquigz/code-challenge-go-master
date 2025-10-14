@@ -28,15 +28,15 @@ func (ms *MetricService) GetMetrics(ctx context.Context, query models.GetMetrics
 	}
 
 	metrics := models.MetricsResponse{
-		MeanUnitsSold:        meanUnitsSold(ctx, books),
-		CheapestBook:         cheapestBook(ctx, books).Name,
-		BooksWrittenByAuthor: booksWrittenByAuthor(ctx, books, query.Author),
+		MeanUnitsSold:        meanUnitsSold(books),
+		CheapestBook:         cheapestBook(books).Name,
+		BooksWrittenByAuthor: booksWrittenByAuthor(books, query.Author),
 	}
 
 	return metrics, nil
 }
 
-func meanUnitsSold(_ context.Context, books []models.Book) uint {
+func meanUnitsSold(books []models.Book) uint {
 	var sum uint
 	for _, book := range books {
 		sum += book.UnitsSold
@@ -44,13 +44,13 @@ func meanUnitsSold(_ context.Context, books []models.Book) uint {
 	return sum / uint(len(books))
 }
 
-func cheapestBook(_ context.Context, books []models.Book) models.Book {
+func cheapestBook(books []models.Book) models.Book {
 	return slices.MinFunc(books, func(a, b models.Book) int {
 		return int(a.Price - b.Price)
 	})
 }
 
-func booksWrittenByAuthor(_ context.Context, books []models.Book, author string) uint {
+func booksWrittenByAuthor(books []models.Book, author string) uint {
 	var count uint
 	for _, book := range books {
 		if book.Author == author {
